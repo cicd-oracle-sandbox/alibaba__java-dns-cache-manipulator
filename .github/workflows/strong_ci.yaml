@@ -1,0 +1,42 @@
+# Quickstart for GitHub Actions
+# https://docs.github.com/en/actions/quickstart
+
+name: Strong CI
+on: [ push, pull_request, workflow_dispatch ]
+jobs:
+  test:
+    permissions:
+      contents: read
+    # https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions#choosing-github-hosted-runners
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    name: CI by multiply java versions
+
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: recursive
+
+      - name: Setup Java
+        uses: actions/setup-java@v5
+        with:
+          # https://github.com/actions/setup-java?tab=readme-ov-file#install-multiple-jdks
+          #
+          # image(ubuntu-latest/ubuntu-24.04) included Java 8/11/17/21/25
+          #   https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2404-Readme.md#java
+          java-version: |
+            8.0.345
+            26
+          distribution: zulu
+          cache: maven
+
+      - name: Run integration test
+        run: scripts/integration_test
+
+      - name: Remove self maven install files
+        run: rm -rf $HOME/.m2/repository/com/alibaba/dns-cache-manipulator*
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v7
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
