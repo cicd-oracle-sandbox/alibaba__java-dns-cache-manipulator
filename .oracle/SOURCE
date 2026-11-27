@@ -1,0 +1,4 @@
+upstream: https://github.com/alibaba/java-dns-cache-manipulator
+commit: 792718ffa81c6d10fcd553cfc414a51e299be0e4
+license: Apache-2.0
+Unmodified snapshot except that .github/workflows was emptied.
